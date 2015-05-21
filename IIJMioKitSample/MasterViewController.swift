@@ -38,13 +38,20 @@ class MasterViewController: UITableViewController {
         if MIORestClient.sharedClient.authorized {
             getInfomation()
         } else {
-            MIORestClient.sharedClient.authorize { [weak self] err in
+            authorize { [weak self] err in
                 if err != nil {
                     return
                 }
                 self?.getInfomation()
             }
         }
+    }
+
+    private func authorize(closure: MIORestClient.OAuthCompletionClosure) {
+        let app = UIApplication.sharedApplication()
+        let window = app.windows[0] as! UIWindow
+        let view = window.rootViewController!.childViewControllers[0].view
+        MIORestClient.sharedClient.authorizeInView(view!!, closure: closure)
     }
 
     private func getInfomation() {

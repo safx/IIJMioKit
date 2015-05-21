@@ -155,15 +155,9 @@ extension MIORestClient {
 #if os(iOS)
 
 extension MIORestClient {
-    public func authorize(closure: OAuthCompletionClosure) {
-        let app = UIApplication.sharedApplication()
-        let window = app.windows[0] as! UIWindow
-        let view = window.rootViewController!.childViewControllers[0].view
-        callback = closure
-        authorizeInView(view!!)
-    }
 
-    private func authorizeInView(view: UIView) {
+    public func authorizeInView(view: UIView, closure: OAuthCompletionClosure) {
+        callback = closure
         dispatch_async(dispatch_get_main_queue()) { () in
             let webView = UIWebView()
             webView.delegate = self
