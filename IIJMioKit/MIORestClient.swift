@@ -55,6 +55,41 @@ import Foundation
         request(createRequest("https://api.iijmio.jp/mobile/d/v1/log/packet/"), completion: completion)
     }
 
+    public func getMergedInfo(completion: (MIOCouponResponse?, NSError?) -> Void) {
+        getCoupon { [weak self] (response1, error1) -> Void in
+            if let r1 = response1 {
+                self?.getPacket { (response2, error2) -> Void in
+                    if let r2 = response2 {
+                        completion(MIORestClient.merge(r1, packetResponse: r2), nil)
+                    } else {
+                        completion(nil, error2 ?? NSError())
+                    }
+                }
+            } else {
+                completion(nil, error1 ?? NSError())
+            }
+        }
+    }
+
+    private class func merge(couponResponse: MIOCouponResponse, packetResponse: MIOPacketResponse) -> MIOCouponResponse {
+        for couponInfo in couponResponse.couponInfo {
+            let hdd = couponInfo.hddServiceCode
+            let pli = packetResponse.packetLogInfo.filter { $0.hddServiceCode == hdd }
+            if let plix = pli.first {
+                precondition(count(pli) == 1, "only one element")
+                for j in couponInfo.hdoInfo {
+                    let hdo = j.hdoServiceCode
+                    let phi = plix.hdoInfo.filter { $0.hdoServiceCode == hdo }
+                    if let phix = phi.first {
+                        j.packetLog = phix.packetLog;
+                    }
+                }
+            }
+        }
+
+        return couponResponse
+    }
+
     public func putCoupon(useCoupon: Bool, hdoServiceCode: String, completion: (MIOChangeCouponResponse?, NSError?) -> Void) {
         var req = createRequest("https://api.iijmio.jp/mobile/d/v1/coupon/")
         req.HTTPMethod = "PUT"
