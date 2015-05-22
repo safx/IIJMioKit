@@ -49,6 +49,8 @@ public class MIOCouponHdoInfo {
     public let voice: Bool
     public var couponUse: Bool
     public let coupon: [MIOCoupon]
+
+    public var packetLog: [MIOPacketLog] = [] // json:"-" assgined from MIOPacketLogInfo
     init() { fatalError() }
 }
 

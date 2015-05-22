@@ -13,6 +13,10 @@ protocol JSONDecodable {
     static func parseJSON(data: [String: AnyObject]) -> (decoded: DecodedType?, error: String?)
 }
 
+protocol JSONEncodable {
+    func toJSON() -> [String: AnyObject]
+}
+
 
 extension NSURL {
     static func parseJSON(data: AnyObject) -> (NSURL?, String?) {
@@ -78,5 +82,52 @@ extension Bool {
             return (v.boolValue, nil)
         }
         return (nil, "Type translate failed in Bool")
+    }
+}
+
+
+
+
+extension NSURL {
+    func toJSON() -> String {
+        return self.absoluteString!
+    }
+}
+
+extension NSDate {
+    func toJSON() -> String {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        return dateFormatter.stringFromDate(self)
+    }
+}
+
+extension String {
+    func toJSON() -> String {
+        return self
+    }
+}
+
+extension Float {
+    func toJSON() -> NSNumber {
+        return NSNumber(float: self)
+    }
+}
+
+extension Int {
+    func toJSON() -> NSNumber {
+        return NSNumber(integer: self)
+    }
+}
+
+extension UInt {
+    func toJSON() -> NSNumber {
+        return NSNumber(unsignedLong: self)
+    }
+}
+
+extension Bool {
+    func toJSON() -> NSNumber {
+        return NSNumber(bool: self)
     }
 }

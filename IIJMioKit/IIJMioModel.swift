@@ -11,9 +11,12 @@ public enum MIOPlan: String {
         }
         return (nil, "Type transformation failed in MIOPlan")
     }
+    public func toJSON() -> String {
+        return self.rawValue
+    }
 }
 
-public class MIOCouponResponse : JSONDecodable, Printable {
+public class MIOCouponResponse : JSONDecodable, JSONEncodable, Printable {
     public let returnCode: String
     public let couponInfo: [MIOCouponInfo]
 
@@ -69,12 +72,19 @@ public class MIOCouponResponse : JSONDecodable, Printable {
         return (MIOCouponResponse(returnCode: returnCode, couponInfo: couponInfo), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "returnCode": returnCode.toJSON(),
+            "couponInfo": map(couponInfo) { $0.toJSON() },
+        ]
+    }
+
     public var description: String {
         return "MIOCouponResponse(returnCode=\(returnCode), couponInfo=\(couponInfo))"
     }
 }
 
-public class MIOPacketResponse : JSONDecodable, Printable {
+public class MIOPacketResponse : JSONDecodable, JSONEncodable, Printable {
     public let returnCode: String
     public let packetLogInfo: [MIOPacketLogInfo]
 
@@ -130,12 +140,19 @@ public class MIOPacketResponse : JSONDecodable, Printable {
         return (MIOPacketResponse(returnCode: returnCode, packetLogInfo: packetLogInfo), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "returnCode": returnCode.toJSON(),
+            "packetLogInfo": map(packetLogInfo) { $0.toJSON() },
+        ]
+    }
+
     public var description: String {
         return "MIOPacketResponse(returnCode=\(returnCode), packetLogInfo=\(packetLogInfo))"
     }
 }
 
-public class MIOChangeCouponResponse : JSONDecodable, Printable {
+public class MIOChangeCouponResponse : JSONDecodable, JSONEncodable, Printable {
     public let returnCode: String
 
     public init(returnCode: String) {
@@ -162,12 +179,18 @@ public class MIOChangeCouponResponse : JSONDecodable, Printable {
         return (MIOChangeCouponResponse(returnCode: returnCode), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "returnCode": returnCode.toJSON(),
+        ]
+    }
+
     public var description: String {
         return "MIOChangeCouponResponse(returnCode=\(returnCode))"
     }
 }
 
-public class MIOCouponInfo : JSONDecodable, Printable {
+public class MIOCouponInfo : JSONDecodable, JSONEncodable, Printable {
     public let hddServiceCode: String
     public let plan: MIOPlan
     public let hdoInfo: [MIOCouponHdoInfo]
@@ -270,12 +293,21 @@ public class MIOCouponInfo : JSONDecodable, Printable {
         return (MIOCouponInfo(hddServiceCode: hddServiceCode, plan: plan, hdoInfo: hdoInfo, coupon: coupon), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "hddServiceCode": hddServiceCode.toJSON(),
+            "plan": plan.toJSON(),
+            "hdoInfo": map(hdoInfo) { $0.toJSON() },
+            "coupon": map(coupon) { $0.toJSON() },
+        ]
+    }
+
     public var description: String {
         return "MIOCouponInfo(hddServiceCode=\(hddServiceCode), plan=\(plan), hdoInfo=\(hdoInfo), coupon=\(coupon))"
     }
 }
 
-public class MIOCouponHdoInfo : JSONDecodable, Printable {
+public class MIOCouponHdoInfo : JSONDecodable, JSONEncodable, Printable {
     public let hdoServiceCode: String
     public let number: String
     public let iccid: String
@@ -284,8 +316,9 @@ public class MIOCouponHdoInfo : JSONDecodable, Printable {
     public let voice: Bool
     public var couponUse: Bool
     public let coupon: [MIOCoupon]
+    public var packetLog: [MIOPacketLog]
 
-    public init(hdoServiceCode: String, number: String, iccid: String, regulation: Bool, sms: Bool, voice: Bool, couponUse: Bool, coupon: [MIOCoupon]) {
+    public init(hdoServiceCode: String, number: String, iccid: String, regulation: Bool, sms: Bool, voice: Bool, couponUse: Bool, coupon: [MIOCoupon], packetLog: [MIOPacketLog] = []) {
         self.hdoServiceCode = hdoServiceCode
         self.number = number
         self.iccid = iccid
@@ -294,6 +327,7 @@ public class MIOCouponHdoInfo : JSONDecodable, Printable {
         self.voice = voice
         self.couponUse = couponUse
         self.coupon = coupon
+        self.packetLog = packetLog
     }
 
     public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOCouponHdoInfo?, error: String?) {
@@ -439,12 +473,25 @@ public class MIOCouponHdoInfo : JSONDecodable, Printable {
         return (MIOCouponHdoInfo(hdoServiceCode: hdoServiceCode, number: number, iccid: iccid, regulation: regulation, sms: sms, voice: voice, couponUse: couponUse, coupon: coupon), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "hdoServiceCode": hdoServiceCode.toJSON(),
+            "number": number.toJSON(),
+            "iccid": iccid.toJSON(),
+            "regulation": regulation.toJSON(),
+            "sms": sms.toJSON(),
+            "voice": voice.toJSON(),
+            "couponUse": couponUse.toJSON(),
+            "coupon": map(coupon) { $0.toJSON() },
+        ]
+    }
+
     public var description: String {
-        return "MIOCouponHdoInfo(hdoServiceCode=\(hdoServiceCode), number=\(number), iccid=\(iccid), regulation=\(regulation), sms=\(sms), voice=\(voice), couponUse=\(couponUse), coupon=\(coupon))"
+        return "MIOCouponHdoInfo(hdoServiceCode=\(hdoServiceCode), number=\(number), iccid=\(iccid), regulation=\(regulation), sms=\(sms), voice=\(voice), couponUse=\(couponUse), coupon=\(coupon), packetLog=\(packetLog))"
     }
 }
 
-public class MIOCoupon : JSONDecodable, Printable {
+public class MIOCoupon : JSONDecodable, JSONEncodable, Printable {
     public let volume: UInt
     public let expire: String?
     public let type: String
@@ -507,12 +554,20 @@ public class MIOCoupon : JSONDecodable, Printable {
         return (MIOCoupon(volume: volume, expire: expire, type: type), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "volume": volume.toJSON(),
+            "expire": expire.map { $0.toJSON() } ?? NSNull(),
+            "type": type.toJSON(),
+        ]
+    }
+
     public var description: String {
         return "MIOCoupon(volume=\(volume), expire=\(expire), type=\(type))"
     }
 }
 
-public class MIOPacketLogInfo : JSONDecodable, Printable {
+public class MIOPacketLogInfo : JSONDecodable, JSONEncodable, Printable {
     public let hddServiceCode: String
     public let plan: MIOPlan
     public let hdoInfo: [MIOPacketHdoInfo]
@@ -586,12 +641,20 @@ public class MIOPacketLogInfo : JSONDecodable, Printable {
         return (MIOPacketLogInfo(hddServiceCode: hddServiceCode, plan: plan, hdoInfo: hdoInfo), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "hddServiceCode": hddServiceCode.toJSON(),
+            "plan": plan.toJSON(),
+            "hdoInfo": map(hdoInfo) { $0.toJSON() },
+        ]
+    }
+
     public var description: String {
         return "MIOPacketLogInfo(hddServiceCode=\(hddServiceCode), plan=\(plan), hdoInfo=\(hdoInfo))"
     }
 }
 
-public class MIOPacketHdoInfo : JSONDecodable, Printable {
+public class MIOPacketHdoInfo : JSONDecodable, JSONEncodable, Printable {
     public let hdoServiceCode: String
     public let packetLog: [MIOPacketLog]
 
@@ -647,12 +710,19 @@ public class MIOPacketHdoInfo : JSONDecodable, Printable {
         return (MIOPacketHdoInfo(hdoServiceCode: hdoServiceCode, packetLog: packetLog), nil)
     }
 
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "hdoServiceCode": hdoServiceCode.toJSON(),
+            "packetLog": map(packetLog) { $0.toJSON() },
+        ]
+    }
+
     public var description: String {
         return "MIOPacketHdoInfo(hdoServiceCode=\(hdoServiceCode), packetLog=\(packetLog))"
     }
 }
 
-public class MIOPacketLog : JSONDecodable, Printable {
+public class MIOPacketLog : JSONDecodable, JSONEncodable, Printable {
     public let date: NSDate
     public let withCoupon: UInt
     public let withoutCoupon: UInt
@@ -713,6 +783,14 @@ public class MIOPacketLog : JSONDecodable, Printable {
         }
         
         return (MIOPacketLog(date: date, withCoupon: withCoupon, withoutCoupon: withoutCoupon), nil)
+    }
+
+    public func toJSON() -> [String: AnyObject] {
+        return [
+            "date": date.toJSON(),
+            "withCoupon": withCoupon.toJSON(),
+            "withoutCoupon": withoutCoupon.toJSON(),
+        ]
     }
 
     public var description: String {
