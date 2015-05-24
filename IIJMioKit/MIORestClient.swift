@@ -36,7 +36,6 @@ import Foundation
     }
 
     private override init() {
-        accessToken = accountStore.queryAccessToken()
         super.init()
     }
 
@@ -46,6 +45,10 @@ import Foundation
         self.state = state
     }
 
+    public func loadAccessToken() -> Bool {
+        accessToken = accountStore.loadAccessToken()
+        return accessToken != nil
+    }
 
     public func getCoupon(completion: (MIOCouponResponse?, NSError?) -> Void) {
         request(createRequest("https://api.iijmio.jp/mobile/d/v1/coupon/"), completion: completion)

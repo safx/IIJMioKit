@@ -22,7 +22,8 @@ public class OAuth2AccountStore {
         ]
     }
     
-    public func queryAccessToken() -> String? {
+
+    public func loadAccessToken() -> String? {
         var attrs = attributes
         attrs[kSecReturnAttributes as String] = kCFBooleanTrue
 
