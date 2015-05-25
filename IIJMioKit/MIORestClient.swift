@@ -45,9 +45,12 @@ import Foundation
         self.state = state
     }
 
-    public func loadAccessToken() -> Bool {
-        accessToken = accountStore.loadAccessToken()
-        return accessToken != nil
+    public func loadAccessToken() -> KeychainResult {
+        let result = accountStore.loadAccessToken()
+        if let t = result.token {
+            accessToken = t
+        }
+        return result.status
     }
 
     public func getCoupon(completion: (MIOCouponResponse?, NSError?) -> Void) {

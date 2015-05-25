@@ -35,7 +35,7 @@ class MasterViewController: UITableViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
 
-        if MIORestClient.sharedClient.loadAccessToken() {
+        if MIORestClient.sharedClient.loadAccessToken() != .Success {
             getInfomation()
         } else {
             authorize { [weak self] err in
