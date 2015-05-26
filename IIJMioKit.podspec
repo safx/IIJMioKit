@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "IIJMioKit"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "An unofficial web API client for IIJMio Coupon API"
   s.homepage     = "https://github.com/safx/IIJMioKit"
   s.license      = { :type => "MIT", :file => "LICENSE" }
