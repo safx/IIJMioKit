@@ -11,21 +11,22 @@ public enum MIOPlan: String {
         }
         return (nil, "Type transformation failed in MIOPlan")
     }
+
     public func toJSON() -> String {
-        return self.rawValue
+        return rawValue
     }
 }
 
 public class MIOCouponResponse : JSONDecodable, JSONEncodable, Printable {
     public let returnCode: String
-    public let couponInfo: [MIOCouponInfo]
+    public let couponInfo: [MIOCouponInfo]?
 
-    public init(returnCode: String, couponInfo: [MIOCouponInfo]) {
+    public init(returnCode: String, couponInfo: [MIOCouponInfo]? = nil) {
         self.returnCode = returnCode
         self.couponInfo = couponInfo
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOCouponResponse?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCouponResponse?, error: String?) {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
             if let _ = v as? NSNull {
@@ -42,23 +43,23 @@ public class MIOCouponResponse : JSONDecodable, JSONEncodable, Printable {
             return (nil, "Keyword not found: 'returnCode'")
         }
         
-        let couponInfo: [MIOCouponInfo]
+        let couponInfo: [MIOCouponInfo]?
         if let v: AnyObject = data["couponInfo"] {
             if let _ = v as? NSNull {
-                return (nil, "Null not allowed in 'couponInfo'")
-            } else if let a = v as? [AnyObject] {
+                couponInfo = nil
+            } else if let array = v as? [AnyObject] {
                 var r: [MIOCouponInfo] = []
-                r.reserveCapacity(count(a))
-                for elem in a {
-                    if let e = elem as? [String : AnyObject] {
-                        let (casted, err) = MIOCouponInfo.parseJSON(e)
-                        if let c = casted {
-                            r.append(c)
-                        } else {
-                            return (nil, err ?? "Type transformation failed in 'couponInfo'")
-                        }
+                r.reserveCapacity(count(array))
+                for e in array {
+                    if let _ = e as? NSNull {
+                        return (nil, "Null not allowed in 'couponInfo'")
+                    }
+        
+                    let (casted, err) = MIOCouponInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
                     } else {
-                        return (nil, "Object expected in 'couponInfo'")
+                        return (nil, err ?? "Type transformation failed in 'couponInfo'")
                     }
                 }
                 couponInfo = r
@@ -66,7 +67,7 @@ public class MIOCouponResponse : JSONDecodable, JSONEncodable, Printable {
                 return (nil, "Type transformation failed in 'couponInfo'")
             }
         } else {
-            return (nil, "Keyword not found: 'couponInfo'")
+            couponInfo = nil
         }
         
         return (MIOCouponResponse(returnCode: returnCode, couponInfo: couponInfo), nil)
@@ -75,7 +76,7 @@ public class MIOCouponResponse : JSONDecodable, JSONEncodable, Printable {
     public func toJSON() -> [String: AnyObject] {
         return [
             "returnCode": returnCode.toJSON(),
-            "couponInfo": map(couponInfo) { $0.toJSON() },
+            "couponInfo": map(couponInfo ?? []) { $0.toJSON() },
         ]
     }
 
@@ -86,14 +87,14 @@ public class MIOCouponResponse : JSONDecodable, JSONEncodable, Printable {
 
 public class MIOPacketResponse : JSONDecodable, JSONEncodable, Printable {
     public let returnCode: String
-    public let packetLogInfo: [MIOPacketLogInfo]
+    public let packetLogInfo: [MIOPacketLogInfo]?
 
-    public init(returnCode: String, packetLogInfo: [MIOPacketLogInfo]) {
+    public init(returnCode: String, packetLogInfo: [MIOPacketLogInfo]? = nil) {
         self.returnCode = returnCode
         self.packetLogInfo = packetLogInfo
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOPacketResponse?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketResponse?, error: String?) {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
             if let _ = v as? NSNull {
@@ -110,23 +111,23 @@ public class MIOPacketResponse : JSONDecodable, JSONEncodable, Printable {
             return (nil, "Keyword not found: 'returnCode'")
         }
         
-        let packetLogInfo: [MIOPacketLogInfo]
+        let packetLogInfo: [MIOPacketLogInfo]?
         if let v: AnyObject = data["packetLogInfo"] {
             if let _ = v as? NSNull {
-                return (nil, "Null not allowed in 'packetLogInfo'")
-            } else if let a = v as? [AnyObject] {
+                packetLogInfo = nil
+            } else if let array = v as? [AnyObject] {
                 var r: [MIOPacketLogInfo] = []
-                r.reserveCapacity(count(a))
-                for elem in a {
-                    if let e = elem as? [String : AnyObject] {
-                        let (casted, err) = MIOPacketLogInfo.parseJSON(e)
-                        if let c = casted {
-                            r.append(c)
-                        } else {
-                            return (nil, err ?? "Type transformation failed in 'packetLogInfo'")
-                        }
+                r.reserveCapacity(count(array))
+                for e in array {
+                    if let _ = e as? NSNull {
+                        return (nil, "Null not allowed in 'packetLogInfo'")
+                    }
+        
+                    let (casted, err) = MIOPacketLogInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
                     } else {
-                        return (nil, "Object expected in 'packetLogInfo'")
+                        return (nil, err ?? "Type transformation failed in 'packetLogInfo'")
                     }
                 }
                 packetLogInfo = r
@@ -134,7 +135,7 @@ public class MIOPacketResponse : JSONDecodable, JSONEncodable, Printable {
                 return (nil, "Type transformation failed in 'packetLogInfo'")
             }
         } else {
-            return (nil, "Keyword not found: 'packetLogInfo'")
+            packetLogInfo = nil
         }
         
         return (MIOPacketResponse(returnCode: returnCode, packetLogInfo: packetLogInfo), nil)
@@ -143,7 +144,7 @@ public class MIOPacketResponse : JSONDecodable, JSONEncodable, Printable {
     public func toJSON() -> [String: AnyObject] {
         return [
             "returnCode": returnCode.toJSON(),
-            "packetLogInfo": map(packetLogInfo) { $0.toJSON() },
+            "packetLogInfo": map(packetLogInfo ?? []) { $0.toJSON() },
         ]
     }
 
@@ -159,7 +160,7 @@ public class MIOChangeCouponResponse : JSONDecodable, JSONEncodable, Printable {
         self.returnCode = returnCode
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOChangeCouponResponse?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOChangeCouponResponse?, error: String?) {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
             if let _ = v as? NSNull {
@@ -203,7 +204,7 @@ public class MIOCouponInfo : JSONDecodable, JSONEncodable, Printable {
         self.coupon = coupon
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOCouponInfo?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCouponInfo?, error: String?) {
         let hddServiceCode: String
         if let v: AnyObject = data["hddServiceCode"] {
             if let _ = v as? NSNull {
@@ -240,19 +241,19 @@ public class MIOCouponInfo : JSONDecodable, JSONEncodable, Printable {
         if let v: AnyObject = data["hdoInfo"] {
             if let _ = v as? NSNull {
                 return (nil, "Null not allowed in 'hdoInfo'")
-            } else if let a = v as? [AnyObject] {
+            } else if let array = v as? [AnyObject] {
                 var r: [MIOCouponHdoInfo] = []
-                r.reserveCapacity(count(a))
-                for elem in a {
-                    if let e = elem as? [String : AnyObject] {
-                        let (casted, err) = MIOCouponHdoInfo.parseJSON(e)
-                        if let c = casted {
-                            r.append(c)
-                        } else {
-                            return (nil, err ?? "Type transformation failed in 'hdoInfo'")
-                        }
+                r.reserveCapacity(count(array))
+                for e in array {
+                    if let _ = e as? NSNull {
+                        return (nil, "Null not allowed in 'hdoInfo'")
+                    }
+        
+                    let (casted, err) = MIOCouponHdoInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
                     } else {
-                        return (nil, "Object expected in 'hdoInfo'")
+                        return (nil, err ?? "Type transformation failed in 'hdoInfo'")
                     }
                 }
                 hdoInfo = r
@@ -267,19 +268,19 @@ public class MIOCouponInfo : JSONDecodable, JSONEncodable, Printable {
         if let v: AnyObject = data["coupon"] {
             if let _ = v as? NSNull {
                 return (nil, "Null not allowed in 'coupon'")
-            } else if let a = v as? [AnyObject] {
+            } else if let array = v as? [AnyObject] {
                 var r: [MIOCoupon] = []
-                r.reserveCapacity(count(a))
-                for elem in a {
-                    if let e = elem as? [String : AnyObject] {
-                        let (casted, err) = MIOCoupon.parseJSON(e)
-                        if let c = casted {
-                            r.append(c)
-                        } else {
-                            return (nil, err ?? "Type transformation failed in 'coupon'")
-                        }
+                r.reserveCapacity(count(array))
+                for e in array {
+                    if let _ = e as? NSNull {
+                        return (nil, "Null not allowed in 'coupon'")
+                    }
+        
+                    let (casted, err) = MIOCoupon.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
                     } else {
-                        return (nil, "Object expected in 'coupon'")
+                        return (nil, err ?? "Type transformation failed in 'coupon'")
                     }
                 }
                 coupon = r
@@ -330,7 +331,7 @@ public class MIOCouponHdoInfo : JSONDecodable, JSONEncodable, Printable {
         self.packetLog = packetLog
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOCouponHdoInfo?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCouponHdoInfo?, error: String?) {
         let hdoServiceCode: String
         if let v: AnyObject = data["hdoServiceCode"] {
             if let _ = v as? NSNull {
@@ -447,19 +448,19 @@ public class MIOCouponHdoInfo : JSONDecodable, JSONEncodable, Printable {
         if let v: AnyObject = data["coupon"] {
             if let _ = v as? NSNull {
                 return (nil, "Null not allowed in 'coupon'")
-            } else if let a = v as? [AnyObject] {
+            } else if let array = v as? [AnyObject] {
                 var r: [MIOCoupon] = []
-                r.reserveCapacity(count(a))
-                for elem in a {
-                    if let e = elem as? [String : AnyObject] {
-                        let (casted, err) = MIOCoupon.parseJSON(e)
-                        if let c = casted {
-                            r.append(c)
-                        } else {
-                            return (nil, err ?? "Type transformation failed in 'coupon'")
-                        }
+                r.reserveCapacity(count(array))
+                for e in array {
+                    if let _ = e as? NSNull {
+                        return (nil, "Null not allowed in 'coupon'")
+                    }
+        
+                    let (casted, err) = MIOCoupon.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
                     } else {
-                        return (nil, "Object expected in 'coupon'")
+                        return (nil, err ?? "Type transformation failed in 'coupon'")
                     }
                 }
                 coupon = r
@@ -502,7 +503,7 @@ public class MIOCoupon : JSONDecodable, JSONEncodable, Printable {
         self.type = type
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOCoupon?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCoupon?, error: String?) {
         let volume: UInt
         if let v: AnyObject = data["volume"] {
             if let _ = v as? NSNull {
@@ -578,7 +579,7 @@ public class MIOPacketLogInfo : JSONDecodable, JSONEncodable, Printable {
         self.hdoInfo = hdoInfo
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOPacketLogInfo?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketLogInfo?, error: String?) {
         let hddServiceCode: String
         if let v: AnyObject = data["hddServiceCode"] {
             if let _ = v as? NSNull {
@@ -615,19 +616,19 @@ public class MIOPacketLogInfo : JSONDecodable, JSONEncodable, Printable {
         if let v: AnyObject = data["hdoInfo"] {
             if let _ = v as? NSNull {
                 return (nil, "Null not allowed in 'hdoInfo'")
-            } else if let a = v as? [AnyObject] {
+            } else if let array = v as? [AnyObject] {
                 var r: [MIOPacketHdoInfo] = []
-                r.reserveCapacity(count(a))
-                for elem in a {
-                    if let e = elem as? [String : AnyObject] {
-                        let (casted, err) = MIOPacketHdoInfo.parseJSON(e)
-                        if let c = casted {
-                            r.append(c)
-                        } else {
-                            return (nil, err ?? "Type transformation failed in 'hdoInfo'")
-                        }
+                r.reserveCapacity(count(array))
+                for e in array {
+                    if let _ = e as? NSNull {
+                        return (nil, "Null not allowed in 'hdoInfo'")
+                    }
+        
+                    let (casted, err) = MIOPacketHdoInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
                     } else {
-                        return (nil, "Object expected in 'hdoInfo'")
+                        return (nil, err ?? "Type transformation failed in 'hdoInfo'")
                     }
                 }
                 hdoInfo = r
@@ -663,7 +664,7 @@ public class MIOPacketHdoInfo : JSONDecodable, JSONEncodable, Printable {
         self.packetLog = packetLog
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOPacketHdoInfo?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketHdoInfo?, error: String?) {
         let hdoServiceCode: String
         if let v: AnyObject = data["hdoServiceCode"] {
             if let _ = v as? NSNull {
@@ -684,19 +685,19 @@ public class MIOPacketHdoInfo : JSONDecodable, JSONEncodable, Printable {
         if let v: AnyObject = data["packetLog"] {
             if let _ = v as? NSNull {
                 return (nil, "Null not allowed in 'packetLog'")
-            } else if let a = v as? [AnyObject] {
+            } else if let array = v as? [AnyObject] {
                 var r: [MIOPacketLog] = []
-                r.reserveCapacity(count(a))
-                for elem in a {
-                    if let e = elem as? [String : AnyObject] {
-                        let (casted, err) = MIOPacketLog.parseJSON(e)
-                        if let c = casted {
-                            r.append(c)
-                        } else {
-                            return (nil, err ?? "Type transformation failed in 'packetLog'")
-                        }
+                r.reserveCapacity(count(array))
+                for e in array {
+                    if let _ = e as? NSNull {
+                        return (nil, "Null not allowed in 'packetLog'")
+                    }
+        
+                    let (casted, err) = MIOPacketLog.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
                     } else {
-                        return (nil, "Object expected in 'packetLog'")
+                        return (nil, err ?? "Type transformation failed in 'packetLog'")
                     }
                 }
                 packetLog = r
@@ -733,7 +734,7 @@ public class MIOPacketLog : JSONDecodable, JSONEncodable, Printable {
         self.withoutCoupon = withoutCoupon
     }
 
-    public class func parseJSON(data: [String: AnyObject]) -> (decoded: MIOPacketLog?, error: String?) {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketLog?, error: String?) {
         let date: NSDate
         if let v: AnyObject = data["date"] {
             if let _ = v as? NSNull {

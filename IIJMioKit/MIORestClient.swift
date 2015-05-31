@@ -78,9 +78,9 @@ import Foundation
     }
 
     private class func merge(couponResponse: MIOCouponResponse, packetResponse: MIOPacketResponse) -> MIOCouponResponse {
-        for couponInfo in couponResponse.couponInfo {
+        for couponInfo in couponResponse.couponInfo ?? [] {
             let hdd = couponInfo.hddServiceCode
-            let pli = packetResponse.packetLogInfo.filter { $0.hddServiceCode == hdd }
+            let pli = (packetResponse.packetLogInfo ?? []).filter { $0.hddServiceCode == hdd }
             if let plix = pli.first {
                 precondition(count(pli) == 1, "only one element")
                 for j in couponInfo.hdoInfo {

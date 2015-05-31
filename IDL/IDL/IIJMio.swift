@@ -16,13 +16,13 @@ public enum MIOPlan: String {
 
 public class MIOCouponResponse {
     public let returnCode: String
-    public let couponInfo: [MIOCouponInfo]
+    public let couponInfo: [MIOCouponInfo]?
     init() { fatalError() }
 }
 
 public class MIOPacketResponse {
     public let returnCode: String
-    public let packetLogInfo: [MIOPacketLogInfo]
+    public let packetLogInfo: [MIOPacketLogInfo]?
     init() { fatalError() }
 }
 

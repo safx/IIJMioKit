@@ -23,8 +23,9 @@
 		8D2920C81B0102FE00B3AE23 /* IIJMioKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D2920BC1B0102FE00B3AE23 /* IIJMioKit.framework */; };
 		8D2920CF1B0102FF00B3AE23 /* IIJMioKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2920CE1B0102FF00B3AE23 /* IIJMioKitTests.swift */; };
 		8D29210A1B0105B100B3AE23 /* IIJMioModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2921091B0105B100B3AE23 /* IIJMioModel.swift */; };
-		8D29210C1B0105D700B3AE23 /* JSONUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D29210B1B0105D700B3AE23 /* JSONUtils.swift */; };
 		8D29210E1B02266900B3AE23 /* MIORestClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D29210D1B02266900B3AE23 /* MIORestClient.swift */; };
+		8DCAD9411B18C5B1002B9B1B /* JSONDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCAD93F1B18C5B1002B9B1B /* JSONDecodable.swift */; };
+		8DCAD9421B18C5B1002B9B1B /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCAD9401B18C5B1002B9B1B /* JSONEncodable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,8 +74,9 @@
 		8D2920CE1B0102FF00B3AE23 /* IIJMioKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIJMioKitTests.swift; sourceTree = "<group>"; };
 		8D2920FE1B01035A00B3AE23 /* IDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = IDL.xcodeproj; path = IDL/IDL.xcodeproj; sourceTree = "<group>"; };
 		8D2921091B0105B100B3AE23 /* IIJMioModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IIJMioModel.swift; sourceTree = "<group>"; };
-		8D29210B1B0105D700B3AE23 /* JSONUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONUtils.swift; sourceTree = "<group>"; };
 		8D29210D1B02266900B3AE23 /* MIORestClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIORestClient.swift; sourceTree = "<group>"; };
+		8DCAD93F1B18C5B1002B9B1B /* JSONDecodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONDecodable.swift; sourceTree = "<group>"; };
+		8DCAD9401B18C5B1002B9B1B /* JSONEncodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONEncodable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,9 +155,10 @@
 		8D2920BE1B0102FE00B3AE23 /* IIJMioKit */ = {
 			isa = PBXGroup;
 			children = (
+				8DCAD93F1B18C5B1002B9B1B /* JSONDecodable.swift */,
+				8DCAD9401B18C5B1002B9B1B /* JSONEncodable.swift */,
 				8D12CBC11B073DFA00DFA117 /* OAuth2AccountStore.swift */,
 				8D29210D1B02266900B3AE23 /* MIORestClient.swift */,
-				8D29210B1B0105D700B3AE23 /* JSONUtils.swift */,
 				8D2921091B0105B100B3AE23 /* IIJMioModel.swift */,
 				8D21D1A71B079DB3004DEDF1 /* IIJMioModel+Util.swift */,
 				8D2920C11B0102FE00B3AE23 /* IIJMioKit.h */,
@@ -374,10 +377,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D12CBC21B073DFA00DFA117 /* OAuth2AccountStore.swift in Sources */,
+				8DCAD9411B18C5B1002B9B1B /* JSONDecodable.swift in Sources */,
 				8D29210A1B0105B100B3AE23 /* IIJMioModel.swift in Sources */,
-				8D29210C1B0105D700B3AE23 /* JSONUtils.swift in Sources */,
 				8D21D1A91B079DC0004DEDF1 /* IIJMioModel+Util.swift in Sources */,
 				8D29210E1B02266900B3AE23 /* MIORestClient.swift in Sources */,
+				8DCAD9421B18C5B1002B9B1B /* JSONEncodable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

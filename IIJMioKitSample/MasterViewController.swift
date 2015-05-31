@@ -57,7 +57,7 @@ class MasterViewController: UITableViewController {
     private func getInfomation() {
         MIORestClient.sharedClient.getCoupon { [weak self] (response, error) -> Void in
             if let s = self, r = response {
-                s.couponInfo = r.couponInfo
+                s.couponInfo = r.couponInfo ?? []
                 dispatch_async(dispatch_get_main_queue()) { () in
                     s.tableView.reloadData()
                 }
@@ -65,7 +65,7 @@ class MasterViewController: UITableViewController {
         }
         MIORestClient.sharedClient.getPacket { [weak self] (response, error) -> Void in
             if let s = self, r = response {
-                s.packetLogInfo = r.packetLogInfo
+                s.packetLogInfo = r.packetLogInfo ?? []
             }
         }
     }
