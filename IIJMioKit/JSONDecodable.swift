@@ -28,7 +28,7 @@ extension NSDate: JSONDecodable {
     static func parseJSON(data: AnyObject) -> (decoded: NSDate?, error: String?) {
         if let v = data as? String {
             let dateFormatter = NSDateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
+            dateFormatter.dateFormat = "yyyyMMdd"
             if let newDate = dateFormatter.dateFromString(v) {
                 return (newDate, nil)
             }
