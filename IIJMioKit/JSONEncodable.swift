@@ -23,7 +23,7 @@ extension NSURL {
 extension NSDate {
     func toJSON() -> String {
         let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.dateFormat = "yyyyMMdd"
         return dateFormatter.stringFromDate(self)
     }
 }
