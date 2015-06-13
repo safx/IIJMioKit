@@ -26,7 +26,7 @@ class PacketLogCell: UITableViewCell {
 
         let f = NSByteCountFormatter()
         f.allowsNonnumericFormatting = false
-        f.allowedUnits = .UseMB | .UseGB
+        f.allowedUnits = [.UseMB, .UseGB]
         withCoupon!.text    = f.stringFromByteCount(Int64(model!.withCoupon * 1000 * 1000))
         withoutCoupon!.text = f.stringFromByteCount(Int64(model!.withoutCoupon * 1000 * 1000))
     }

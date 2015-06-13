@@ -35,7 +35,7 @@ class MasterViewController: UITableViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
 
-        if MIORestClient.sharedClient.loadAccessToken() != .Success {
+        if MIORestClient.sharedClient.loadAccessToken() == .Success {
             getInfomation()
         } else {
             authorize { [weak self] err in
@@ -49,9 +49,9 @@ class MasterViewController: UITableViewController {
 
     private func authorize(closure: MIORestClient.OAuthCompletionClosure) {
         let app = UIApplication.sharedApplication()
-        let window = app.windows[0] as! UIWindow
+        let window = app.windows[0] as UIWindow
         let view = window.rootViewController!.childViewControllers[0].view
-        MIORestClient.sharedClient.authorizeInView(view!!, closure: closure)
+        MIORestClient.sharedClient.authorizeInView(view!, closure: closure)
     }
 
     private func getInfomation() {
@@ -74,14 +74,14 @@ class MasterViewController: UITableViewController {
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
-            if let indexPath = self.tableView.indexPathForSelectedRow() {
+            if let indexPath = self.tableView.indexPathForSelectedRow {
                 let info = couponInfo[indexPath.section].hdoInfo[indexPath.row - 1]
                 let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
 
                 for i in packetLogInfo {
                     for j in i.hdoInfo {
                         if info.hdoServiceCode == j.hdoServiceCode {
-                            controller.packetLog = reverse(j.packetLog)
+                            controller.packetLog = j.packetLog.reverse()
                             controller.info = info
                         }
                     }

@@ -21,7 +21,7 @@ class CouponInfoCell: UITableViewCell {
     private func modelDidSet() {
         plan!.text = model!.plan.rawValue
 
-        let c = reduce(model!.coupon, Int64(0)) { a, e in return a + Int64(e.volume) }
+        let c = (model!.coupon).reduce(Int64(0)) { a, e in return a + Int64(e.volume) }
         coupon!.text = NSByteCountFormatter.stringFromByteCount(c * 1000 * 1000, countStyle: .Decimal)
     }
 

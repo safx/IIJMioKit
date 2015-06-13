@@ -161,6 +161,7 @@
 		8D2920D91B01035900B3AE23 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Safx Developers";
 				TargetAttributes = {
@@ -406,6 +407,7 @@
 				8D2920FA1B01035A00B3AE23 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8D2920FB1B01035A00B3AE23 /* Build configuration list for PBXNativeTarget "IDLTests" */ = {
 			isa = XCConfigurationList;
@@ -414,6 +416,7 @@
 				8D2920FD1B01035A00B3AE23 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

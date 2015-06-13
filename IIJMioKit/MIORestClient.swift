@@ -68,11 +68,11 @@ import Foundation
                     if let r2 = response2 {
                         completion(MIORestClient.merge(r1, packetResponse: r2), nil)
                     } else {
-                        completion(nil, error2 ?? NSError())
+                        //completion(nil, error2 ?? NSError())
                     }
                 }
             } else {
-                completion(nil, error1 ?? NSError())
+                //completion(nil, error1 ?? NSError())
             }
         }
     }
@@ -82,7 +82,7 @@ import Foundation
             let hdd = couponInfo.hddServiceCode
             let pli = (packetResponse.packetLogInfo ?? []).filter { $0.hddServiceCode == hdd }
             if let plix = pli.first {
-                precondition(count(pli) == 1, "only one element")
+                precondition(pli.count == 1, "only one element")
                 for j in couponInfo.hdoInfo {
                     let hdo = j.hdoServiceCode
                     let phi = plix.hdoInfo.filter { $0.hdoServiceCode == hdo }
@@ -97,7 +97,7 @@ import Foundation
     }
 
     public func putCoupon(useCoupon: Bool, hdoServiceCode: String, completion: (MIOChangeCouponResponse?, NSError?) -> Void) {
-        var req = createRequest("https://api.iijmio.jp/mobile/d/v1/coupon/")
+        let req = createRequest("https://api.iijmio.jp/mobile/d/v1/coupon/")
         req.HTTPMethod = "PUT"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let body = "{\"couponInfo\":[{\"hdoInfo\":[{\"hdoServiceCode\":\"\(hdoServiceCode)\",\"couponUse\":\(useCoupon)}]}]}"
@@ -106,32 +106,27 @@ import Foundation
     }
 
     private func request<T where T: JSONDecodable, T == T.DecodedType>(request: NSURLRequest, completion: (T?, NSError?) -> Void) {
-        let task = session.dataTaskWithRequest(request) { [weak self] (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void in
-            if data != nil {
-                let m = MIORestClient.convert(data, nil as T?)
-                completion(m)
+        let task = session.dataTaskWithRequest(request) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+            if let d = data {
+                do {
+                    let m = try MIORestClient.convert(d, nil as T?)
+                    completion(m, nil)
+                } catch {
+                    completion(nil, NSError(domain: "jp.blogspot.safx-dev.IIJMio", code: 10401, userInfo: nil))
+                }
             } else {
-                // completion(nil, error)
-                // FIXME: compilation error in release mode
-                completion(nil, NSError())
+                completion(nil, error ?? NSError(domain: "jp.blogspot.safx-dev.IIJMio", code: 10400, userInfo: nil))
             }
         }
-        task.resume()
+        task?.resume()
     }
 
-    private static func convert<T where T: JSONDecodable, T == T.DecodedType>(data: NSData, _: T? = nil) -> (T?, NSError?) {
-        var error: NSError? = nil
-        let jsonObj: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error)
-        if error != nil { return (nil, error) }
-
+    private static func convert<T where T: JSONDecodable, T == T.DecodedType>(data: NSData, _: T? = nil) throws -> T {
+        let jsonObj = try! NSJSONSerialization.JSONObjectWithData(data, options: [])
         let json: [String : AnyObject] = jsonObj as! [String : AnyObject]
-        let (ret, err) = T.parseJSON(json)
 
-        if ret != nil && err == nil {
-            return (ret, nil)
-        } else {
-            return (nil, NSError(domain: "com.blogspot.safx-dev.IIJMioKit", code: 400, userInfo: [NSLocalizedDescriptionKey: err ?? "JSON decode Error"]))
-        }
+        let ret = try! T.parseJSON(json)
+        return ret
     }
 
     private func createRequest(urlString: String) -> NSMutableURLRequest {
@@ -140,10 +135,10 @@ import Foundation
     }
 
     private func initializeSession() {
-        precondition(clientID != "" && accessToken != nil, "should be non-nil")
+        precondition(clientID != "" && redirectURI != "", "should be non-nil")
         if session == nil {
             let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.timeoutIntervalForRequest = 15.0
+            configuration.timeoutIntervalForRequest = 30.0
             let headers: [NSObject : AnyObject] = [
                 "X-IIJmio-Developer": clientID,
                 "X-IIJmio-Authorization": accessToken!
@@ -161,7 +156,7 @@ extension MIORestClient {
 
         let dic = [ "response_type":"token", "client_id":clientID, "redirect_uri":redirectURI, "state":state ]
         if let c = NSURLComponents(string: "https://api.iijmio.jp/mobile/d/v1/authorization/") {
-            let kv = map(dic) { (k, v) in "\(k)=\(v)" }
+            let kv = dic.map { (k, v) in "\(k)=\(v)" }
             c.query = "&".join(kv)
             if let url = c.URL {
                 return NSURLRequest(URL: url)
@@ -173,7 +168,7 @@ extension MIORestClient {
     private func checkAccessToken(url: NSURL) -> Bool {
         let params: [String: String]
         if let frag = url.fragment {
-            params = reduce(frag.componentsSeparatedByString("&"), [:]) { (var a, e) in
+            params = frag.componentsSeparatedByString("&").reduce([:]) { (var a, e) in
                 let kv = e.componentsSeparatedByString("=")
                 a[kv[0]] = kv[1]
                 return a
@@ -223,7 +218,7 @@ extension MIORestClient: UIWebViewDelegate {
         return true
     }
 
-    public func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
+    public func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
         callback(error)
     }
 }

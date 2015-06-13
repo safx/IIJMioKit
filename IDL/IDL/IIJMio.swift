@@ -8,6 +8,31 @@
 
 import Foundation
 
+protocol ClassDefault: ClassInit, JSONDecodable, JSONEncodable, Printable {}
+protocol EnumDefault: JSONDecodable, JSONEncodable, Printable {}
+
+protocol ClassInit {}
+protocol Printable {}
+protocol JSONEncodable {}
+protocol JSONDecodable {}
+protocol URLRequestHelper {}
+protocol EnumStaticInit {}
+
+public enum Router: URLRequestHelper, Printable {
+    case GetCoupon                                       // router:",/mobile/d/v1/coupon/"
+    case GetPacket                                       // router:",/mobile/d/v1/log/packet/"
+    case PutCoupon(couponInfo: [MIOCouponSwitchHdoInfo]) // router:"PUT,/mobile/d/v1/coupon/"
+}
+
+public class MIOCouponSwitchHdoInfo: ClassInit, JSONEncodable {
+    public let hdoInfo: [MIOCouponUse] = []
+}
+
+public class MIOCouponUse: ClassInit, JSONEncodable {
+    public let hdoServiceCode: String = ""
+    public let couponUse: Bool = true
+}
+
 public enum MIOPlan: String {
     case FamilyShare = "Family Share"
     case MinimumStart = "Minimum Start"
@@ -50,7 +75,7 @@ public class MIOCouponHdoInfo {
     public var couponUse: Bool
     public let coupon: [MIOCoupon]
 
-    public var packetLog: [MIOPacketLog] = [] // json:"-" assgined from MIOPacketLogInfo
+    public var packetLog: [MIOPacketLog] = [] // json:"-" // assgined from MIOPacketLogInfo
     init() { fatalError() }
 }
 

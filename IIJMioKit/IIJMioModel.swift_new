@@ -72,11 +72,11 @@ public enum MIOPlan: String, CustomStringConvertible {
     case MinimumStart = "Minimum Start"
     case LightStart = "Light Start"
 
-    public static func parseJSON(data: AnyObject) throws -> MIOPlan {
-        if let v = data as? String, val = MIOPlan(rawValue: v) {
-            return val
+    public static func parseJSON(data: AnyObject) -> (decoded: MIOPlan?, error: String?) {
+        if let v = data as? String {
+            return (MIOPlan(rawValue: v), nil)
         }
-        throw JSONDecodeError.ValueTranslationFailed(type: "MIOPlan")
+        return (nil, "Type transformation failed in MIOPlan")
     }
 
     public func toJSON() -> String {
@@ -95,20 +95,21 @@ public class MIOCouponResponse: JSONDecodable, JSONEncodable, CustomStringConver
         self.couponInfo = couponInfo
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOCouponResponse {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCouponResponse?, error: String?) {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "returnCode")
+                return (nil, "Null not allowed in 'returnCode'")
             } else {
-                do {
-                    returnCode = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "returnCode", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    returnCode = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'returnCode'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "returnCode")
+            return (nil, "Keyword not found: 'returnCode'")
         }
         
         let couponInfo: [MIOCouponInfo]?
@@ -120,24 +121,25 @@ public class MIOCouponResponse: JSONDecodable, JSONEncodable, CustomStringConver
                 r.reserveCapacity(array.count)
                 for e in array {
                     if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "couponInfo")
+                        return (nil, "Null not allowed in 'couponInfo'")
                     }
         
-                    do {
-                        r.append(try MIOCouponInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "couponInfo", type: "MIOCouponInfo")
+                    let (casted, err) = MIOCouponInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
+                    } else {
+                        return (nil, err ?? "Type transformation failed in 'couponInfo'")
                     }
                 }
                 couponInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "couponInfo", type: "Array")
+                return (nil, "Type transformation failed in 'couponInfo'")
             }
         } else {
             couponInfo = nil
         }
         
-        return MIOCouponResponse(returnCode: returnCode, couponInfo: couponInfo)
+        return (MIOCouponResponse(returnCode: returnCode, couponInfo: couponInfo), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -161,20 +163,21 @@ public class MIOPacketResponse: JSONDecodable, JSONEncodable, CustomStringConver
         self.packetLogInfo = packetLogInfo
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOPacketResponse {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketResponse?, error: String?) {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "returnCode")
+                return (nil, "Null not allowed in 'returnCode'")
             } else {
-                do {
-                    returnCode = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "returnCode", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    returnCode = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'returnCode'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "returnCode")
+            return (nil, "Keyword not found: 'returnCode'")
         }
         
         let packetLogInfo: [MIOPacketLogInfo]?
@@ -186,24 +189,25 @@ public class MIOPacketResponse: JSONDecodable, JSONEncodable, CustomStringConver
                 r.reserveCapacity(array.count)
                 for e in array {
                     if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "packetLogInfo")
+                        return (nil, "Null not allowed in 'packetLogInfo'")
                     }
         
-                    do {
-                        r.append(try MIOPacketLogInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "packetLogInfo", type: "MIOPacketLogInfo")
+                    let (casted, err) = MIOPacketLogInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
+                    } else {
+                        return (nil, err ?? "Type transformation failed in 'packetLogInfo'")
                     }
                 }
                 packetLogInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "packetLogInfo", type: "Array")
+                return (nil, "Type transformation failed in 'packetLogInfo'")
             }
         } else {
             packetLogInfo = nil
         }
         
-        return MIOPacketResponse(returnCode: returnCode, packetLogInfo: packetLogInfo)
+        return (MIOPacketResponse(returnCode: returnCode, packetLogInfo: packetLogInfo), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -225,23 +229,24 @@ public class MIOChangeCouponResponse: JSONDecodable, JSONEncodable, CustomString
         self.returnCode = returnCode
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOChangeCouponResponse {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOChangeCouponResponse?, error: String?) {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "returnCode")
+                return (nil, "Null not allowed in 'returnCode'")
             } else {
-                do {
-                    returnCode = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "returnCode", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    returnCode = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'returnCode'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "returnCode")
+            return (nil, "Keyword not found: 'returnCode'")
         }
         
-        return MIOChangeCouponResponse(returnCode: returnCode)
+        return (MIOChangeCouponResponse(returnCode: returnCode), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -268,90 +273,94 @@ public class MIOCouponInfo: JSONDecodable, JSONEncodable, CustomStringConvertibl
         self.coupon = coupon
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOCouponInfo {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCouponInfo?, error: String?) {
         let hddServiceCode: String
         if let v: AnyObject = data["hddServiceCode"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "hddServiceCode")
+                return (nil, "Null not allowed in 'hddServiceCode'")
             } else {
-                do {
-                    hddServiceCode = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "hddServiceCode", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    hddServiceCode = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'hddServiceCode'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "hddServiceCode")
+            return (nil, "Keyword not found: 'hddServiceCode'")
         }
         
         let plan: MIOPlan
         if let v: AnyObject = data["plan"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "plan")
+                return (nil, "Null not allowed in 'plan'")
             } else {
-                do {
-                    plan = try MIOPlan.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "plan", type: "MIOPlan")
+                let (casted, err) = MIOPlan.parseJSON(v)
+                if let c = casted {
+                    plan = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'plan'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "plan")
+            return (nil, "Keyword not found: 'plan'")
         }
         
         let hdoInfo: [MIOCouponHdoInfo]
         if let v: AnyObject = data["hdoInfo"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "hdoInfo")
+                return (nil, "Null not allowed in 'hdoInfo'")
             } else if let array = v as? [AnyObject] {
                 var r: [MIOCouponHdoInfo] = []
                 r.reserveCapacity(array.count)
                 for e in array {
                     if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "hdoInfo")
+                        return (nil, "Null not allowed in 'hdoInfo'")
                     }
         
-                    do {
-                        r.append(try MIOCouponHdoInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "MIOCouponHdoInfo")
+                    let (casted, err) = MIOCouponHdoInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
+                    } else {
+                        return (nil, err ?? "Type transformation failed in 'hdoInfo'")
                     }
                 }
                 hdoInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "Array")
+                return (nil, "Type transformation failed in 'hdoInfo'")
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "hdoInfo")
+            return (nil, "Keyword not found: 'hdoInfo'")
         }
         
         let coupon: [MIOCoupon]
         if let v: AnyObject = data["coupon"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "coupon")
+                return (nil, "Null not allowed in 'coupon'")
             } else if let array = v as? [AnyObject] {
                 var r: [MIOCoupon] = []
                 r.reserveCapacity(array.count)
                 for e in array {
                     if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "coupon")
+                        return (nil, "Null not allowed in 'coupon'")
                     }
         
-                    do {
-                        r.append(try MIOCoupon.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "coupon", type: "MIOCoupon")
+                    let (casted, err) = MIOCoupon.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
+                    } else {
+                        return (nil, err ?? "Type transformation failed in 'coupon'")
                     }
                 }
                 coupon = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "coupon", type: "Array")
+                return (nil, "Type transformation failed in 'coupon'")
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "coupon")
+            return (nil, "Keyword not found: 'coupon'")
         }
         
-        return MIOCouponInfo(hddServiceCode: hddServiceCode, plan: plan, hdoInfo: hdoInfo, coupon: coupon)
+        return (MIOCouponInfo(hddServiceCode: hddServiceCode, plan: plan, hdoInfo: hdoInfo, coupon: coupon), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -391,139 +400,147 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         self.packetLog = packetLog
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOCouponHdoInfo {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCouponHdoInfo?, error: String?) {
         let hdoServiceCode: String
         if let v: AnyObject = data["hdoServiceCode"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "hdoServiceCode")
+                return (nil, "Null not allowed in 'hdoServiceCode'")
             } else {
-                do {
-                    hdoServiceCode = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "hdoServiceCode", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    hdoServiceCode = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'hdoServiceCode'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "hdoServiceCode")
+            return (nil, "Keyword not found: 'hdoServiceCode'")
         }
         
         let number: String
         if let v: AnyObject = data["number"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "number")
+                return (nil, "Null not allowed in 'number'")
             } else {
-                do {
-                    number = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "number", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    number = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'number'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "number")
+            return (nil, "Keyword not found: 'number'")
         }
         
         let iccid: String
         if let v: AnyObject = data["iccid"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "iccid")
+                return (nil, "Null not allowed in 'iccid'")
             } else {
-                do {
-                    iccid = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "iccid", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    iccid = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'iccid'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "iccid")
+            return (nil, "Keyword not found: 'iccid'")
         }
         
         let regulation: Bool
         if let v: AnyObject = data["regulation"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "regulation")
+                return (nil, "Null not allowed in 'regulation'")
             } else {
-                do {
-                    regulation = try Bool.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "regulation", type: "Bool")
+                let (casted, err) = Bool.parseJSON(v)
+                if let c = casted {
+                    regulation = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'regulation'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "regulation")
+            return (nil, "Keyword not found: 'regulation'")
         }
         
         let sms: Bool
         if let v: AnyObject = data["sms"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "sms")
+                return (nil, "Null not allowed in 'sms'")
             } else {
-                do {
-                    sms = try Bool.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "sms", type: "Bool")
+                let (casted, err) = Bool.parseJSON(v)
+                if let c = casted {
+                    sms = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'sms'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "sms")
+            return (nil, "Keyword not found: 'sms'")
         }
         
         let voice: Bool
         if let v: AnyObject = data["voice"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "voice")
+                return (nil, "Null not allowed in 'voice'")
             } else {
-                do {
-                    voice = try Bool.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "voice", type: "Bool")
+                let (casted, err) = Bool.parseJSON(v)
+                if let c = casted {
+                    voice = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'voice'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "voice")
+            return (nil, "Keyword not found: 'voice'")
         }
         
         let couponUse: Bool
         if let v: AnyObject = data["couponUse"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "couponUse")
+                return (nil, "Null not allowed in 'couponUse'")
             } else {
-                do {
-                    couponUse = try Bool.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "couponUse", type: "Bool")
+                let (casted, err) = Bool.parseJSON(v)
+                if let c = casted {
+                    couponUse = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'couponUse'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "couponUse")
+            return (nil, "Keyword not found: 'couponUse'")
         }
         
         let coupon: [MIOCoupon]
         if let v: AnyObject = data["coupon"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "coupon")
+                return (nil, "Null not allowed in 'coupon'")
             } else if let array = v as? [AnyObject] {
                 var r: [MIOCoupon] = []
                 r.reserveCapacity(array.count)
                 for e in array {
                     if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "coupon")
+                        return (nil, "Null not allowed in 'coupon'")
                     }
         
-                    do {
-                        r.append(try MIOCoupon.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "coupon", type: "MIOCoupon")
+                    let (casted, err) = MIOCoupon.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
+                    } else {
+                        return (nil, err ?? "Type transformation failed in 'coupon'")
                     }
                 }
                 coupon = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "coupon", type: "Array")
+                return (nil, "Type transformation failed in 'coupon'")
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "coupon")
+            return (nil, "Keyword not found: 'coupon'")
         }
         
-        return MIOCouponHdoInfo(hdoServiceCode: hdoServiceCode, number: number, iccid: iccid, regulation: regulation, sms: sms, voice: voice, couponUse: couponUse, coupon: coupon)
+        return (MIOCouponHdoInfo(hdoServiceCode: hdoServiceCode, number: number, iccid: iccid, regulation: regulation, sms: sms, voice: voice, couponUse: couponUse, coupon: coupon), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -555,20 +572,21 @@ public class MIOCoupon: JSONDecodable, JSONEncodable, CustomStringConvertible {
         self.type = type
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOCoupon {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOCoupon?, error: String?) {
         let volume: UInt
         if let v: AnyObject = data["volume"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "volume")
+                return (nil, "Null not allowed in 'volume'")
             } else {
-                do {
-                    volume = try UInt.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "volume", type: "UInt")
+                let (casted, err) = UInt.parseJSON(v)
+                if let c = casted {
+                    volume = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'volume'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "volume")
+            return (nil, "Keyword not found: 'volume'")
         }
         
         let expire: String?
@@ -576,10 +594,11 @@ public class MIOCoupon: JSONDecodable, JSONEncodable, CustomStringConvertible {
             if let _ = v as? NSNull {
                 expire = nil
             } else {
-                do {
-                    expire = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "expire", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    expire = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'expire'")
                 }
             }
         } else {
@@ -589,19 +608,20 @@ public class MIOCoupon: JSONDecodable, JSONEncodable, CustomStringConvertible {
         let type: String
         if let v: AnyObject = data["type"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "type")
+                return (nil, "Null not allowed in 'type'")
             } else {
-                do {
-                    type = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "type", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    type = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'type'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "type")
+            return (nil, "Keyword not found: 'type'")
         }
         
-        return MIOCoupon(volume: volume, expire: expire, type: type)
+        return (MIOCoupon(volume: volume, expire: expire, type: type), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -628,64 +648,67 @@ public class MIOPacketLogInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         self.hdoInfo = hdoInfo
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOPacketLogInfo {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketLogInfo?, error: String?) {
         let hddServiceCode: String
         if let v: AnyObject = data["hddServiceCode"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "hddServiceCode")
+                return (nil, "Null not allowed in 'hddServiceCode'")
             } else {
-                do {
-                    hddServiceCode = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "hddServiceCode", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    hddServiceCode = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'hddServiceCode'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "hddServiceCode")
+            return (nil, "Keyword not found: 'hddServiceCode'")
         }
         
         let plan: MIOPlan
         if let v: AnyObject = data["plan"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "plan")
+                return (nil, "Null not allowed in 'plan'")
             } else {
-                do {
-                    plan = try MIOPlan.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "plan", type: "MIOPlan")
+                let (casted, err) = MIOPlan.parseJSON(v)
+                if let c = casted {
+                    plan = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'plan'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "plan")
+            return (nil, "Keyword not found: 'plan'")
         }
         
         let hdoInfo: [MIOPacketHdoInfo]
         if let v: AnyObject = data["hdoInfo"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "hdoInfo")
+                return (nil, "Null not allowed in 'hdoInfo'")
             } else if let array = v as? [AnyObject] {
                 var r: [MIOPacketHdoInfo] = []
                 r.reserveCapacity(array.count)
                 for e in array {
                     if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "hdoInfo")
+                        return (nil, "Null not allowed in 'hdoInfo'")
                     }
         
-                    do {
-                        r.append(try MIOPacketHdoInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "MIOPacketHdoInfo")
+                    let (casted, err) = MIOPacketHdoInfo.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
+                    } else {
+                        return (nil, err ?? "Type transformation failed in 'hdoInfo'")
                     }
                 }
                 hdoInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "Array")
+                return (nil, "Type transformation failed in 'hdoInfo'")
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "hdoInfo")
+            return (nil, "Keyword not found: 'hdoInfo'")
         }
         
-        return MIOPacketLogInfo(hddServiceCode: hddServiceCode, plan: plan, hdoInfo: hdoInfo)
+        return (MIOPacketLogInfo(hddServiceCode: hddServiceCode, plan: plan, hdoInfo: hdoInfo), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -710,49 +733,51 @@ public class MIOPacketHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         self.packetLog = packetLog
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOPacketHdoInfo {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketHdoInfo?, error: String?) {
         let hdoServiceCode: String
         if let v: AnyObject = data["hdoServiceCode"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "hdoServiceCode")
+                return (nil, "Null not allowed in 'hdoServiceCode'")
             } else {
-                do {
-                    hdoServiceCode = try String.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "hdoServiceCode", type: "String")
+                let (casted, err) = String.parseJSON(v)
+                if let c = casted {
+                    hdoServiceCode = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'hdoServiceCode'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "hdoServiceCode")
+            return (nil, "Keyword not found: 'hdoServiceCode'")
         }
         
         let packetLog: [MIOPacketLog]
         if let v: AnyObject = data["packetLog"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "packetLog")
+                return (nil, "Null not allowed in 'packetLog'")
             } else if let array = v as? [AnyObject] {
                 var r: [MIOPacketLog] = []
                 r.reserveCapacity(array.count)
                 for e in array {
                     if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "packetLog")
+                        return (nil, "Null not allowed in 'packetLog'")
                     }
         
-                    do {
-                        r.append(try MIOPacketLog.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "packetLog", type: "MIOPacketLog")
+                    let (casted, err) = MIOPacketLog.parseJSON(e)
+                    if let c = casted {
+                        r.append(c)
+                    } else {
+                        return (nil, err ?? "Type transformation failed in 'packetLog'")
                     }
                 }
                 packetLog = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "packetLog", type: "Array")
+                return (nil, "Type transformation failed in 'packetLog'")
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "packetLog")
+            return (nil, "Keyword not found: 'packetLog'")
         }
         
-        return MIOPacketHdoInfo(hdoServiceCode: hdoServiceCode, packetLog: packetLog)
+        return (MIOPacketHdoInfo(hdoServiceCode: hdoServiceCode, packetLog: packetLog), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
@@ -778,53 +803,56 @@ public class MIOPacketLog: JSONDecodable, JSONEncodable, CustomStringConvertible
         self.withoutCoupon = withoutCoupon
     }
 
-    public class func parseJSON(data: AnyObject) throws -> MIOPacketLog {
+    public class func parseJSON(data: AnyObject) -> (decoded: MIOPacketLog?, error: String?) {
         let date: NSDate
         if let v: AnyObject = data["date"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "date")
+                return (nil, "Null not allowed in 'date'")
             } else {
-                do {
-                    date = try NSDate.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "date", type: "NSDate")
+                let (casted, err) = NSDate.parseJSON(v)
+                if let c = casted {
+                    date = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'date'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "date")
+            return (nil, "Keyword not found: 'date'")
         }
         
         let withCoupon: UInt
         if let v: AnyObject = data["withCoupon"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "withCoupon")
+                return (nil, "Null not allowed in 'withCoupon'")
             } else {
-                do {
-                    withCoupon = try UInt.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "withCoupon", type: "UInt")
+                let (casted, err) = UInt.parseJSON(v)
+                if let c = casted {
+                    withCoupon = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'withCoupon'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "withCoupon")
+            return (nil, "Keyword not found: 'withCoupon'")
         }
         
         let withoutCoupon: UInt
         if let v: AnyObject = data["withoutCoupon"] {
             if let _ = v as? NSNull {
-                throw JSONDecodeError.NonNullablle(key: "withoutCoupon")
+                return (nil, "Null not allowed in 'withoutCoupon'")
             } else {
-                do {
-                    withoutCoupon = try UInt.parseJSON(v)
-                } catch JSONDecodeError.ValueTranslationFailed {
-                    throw JSONDecodeError.TypeMismatch(key: "withoutCoupon", type: "UInt")
+                let (casted, err) = UInt.parseJSON(v)
+                if let c = casted {
+                    withoutCoupon = c
+                } else {
+                    return (nil, err ?? "Type transformation failed in 'withoutCoupon'")
                 }
             }
         } else {
-            throw JSONDecodeError.MissingKey(key: "withoutCoupon")
+            return (nil, "Keyword not found: 'withoutCoupon'")
         }
         
-        return MIOPacketLog(date: date, withCoupon: withCoupon, withoutCoupon: withoutCoupon)
+        return (MIOPacketLog(date: date, withCoupon: withCoupon, withoutCoupon: withoutCoupon), nil)
     }
 
     public func toJSON() -> [String: AnyObject] {
