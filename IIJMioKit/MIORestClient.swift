@@ -8,6 +8,24 @@
 
 import Foundation
 
+extension Router {
+
+    private static let baseURLString = "https://api.iijmio.jp"
+
+    public var URLRequest: NSURLRequest {
+        let request = NSMutableURLRequest(URL: NSURL(string: Router.baseURLString + path)!)
+        request.HTTPMethod = self.method
+
+        let params = self.params
+        if !params.isEmpty {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(params, options: [])
+        }
+        return request
+    }
+}
+
+
 @objc public class MIORestClient: NSObject, NSURLSessionDelegate {
     public typealias OAuthCompletionClosure = (NSError? -> Void)
 
@@ -25,7 +43,22 @@ import Foundation
 
     private var accessToken: String?
 
-    private var session: NSURLSession!
+    private var session_: NSURLSession!
+    private var session: NSURLSession {
+        precondition(clientID != "" && redirectURI != "", "should be non-nil")
+        if session_ == nil {
+            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+            configuration.timeoutIntervalForRequest = 30.0
+            let headers: [NSObject : AnyObject] = [
+                "X-IIJmio-Developer": clientID,
+                "X-IIJmio-Authorization": accessToken!
+            ]
+            configuration.HTTPAdditionalHeaders = headers
+            session_ = NSURLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+        }
+        return session_
+    }
+
     private var callback: OAuthCompletionClosure = { (err) in }
 
     private let accountStore = OAuth2AccountStore(serviceName: "IIJMioCouponAPI")
@@ -33,10 +66,6 @@ import Foundation
 
     public var authorized: Bool {
         return accessToken != nil
-    }
-
-    private override init() {
-        super.init()
     }
 
     public func setUp(clientID: String, redirectURI: String, state: String) {
@@ -54,11 +83,16 @@ import Foundation
     }
 
     public func getCoupon(completion: (MIOCouponResponse?, NSError?) -> Void) {
-        request(createRequest("https://api.iijmio.jp/mobile/d/v1/coupon/"), completion: completion)
+        request(Router.GetCoupon, completion: completion)
     }
 
     public func getPacket(completion: (MIOPacketResponse?, NSError?) -> Void) {
-        request(createRequest("https://api.iijmio.jp/mobile/d/v1/log/packet/"), completion: completion)
+        request(Router.GetPacket, completion: completion)
+    }
+
+    public func putCoupon(useCoupon: Bool, hdoServiceCode: String, completion: (MIOChangeCouponResponse?, NSError?) -> Void) {
+        let info = [MIOCouponSwitchHdoInfo(hdoInfo: [MIOCouponUse(hdoServiceCode: hdoServiceCode, couponUse: useCoupon)])]
+        request(Router.PutCoupon(couponInfo: info), completion: completion)
     }
 
     public func getMergedInfo(completion: (MIOCouponResponse?, NSError?) -> Void) {
@@ -96,56 +130,17 @@ import Foundation
         return couponResponse
     }
 
-    public func putCoupon(useCoupon: Bool, hdoServiceCode: String, completion: (MIOChangeCouponResponse?, NSError?) -> Void) {
-        let req = createRequest("https://api.iijmio.jp/mobile/d/v1/coupon/")
-        req.HTTPMethod = "PUT"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = "{\"couponInfo\":[{\"hdoInfo\":[{\"hdoServiceCode\":\"\(hdoServiceCode)\",\"couponUse\":\(useCoupon)}]}]}"
-        req.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-        request(req, completion: completion)
-    }
-
-    private func request<T where T: JSONDecodable, T == T.DecodedType>(request: NSURLRequest, completion: (T?, NSError?) -> Void) {
-        let task = session.dataTaskWithRequest(request) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+    private func request<T where T: JSONDecodable, T == T.DecodedType>(router: Router, completion: (T?, NSError?) -> Void) {
+        let task = session.dataTaskWithRequest(router.URLRequest) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
             if let d = data {
-                do {
-                    let m = try MIORestClient.convert(d, nil as T?)
-                    completion(m, nil)
-                } catch {
-                    completion(nil, NSError(domain: "jp.blogspot.safx-dev.IIJMio", code: 10401, userInfo: nil))
-                }
+                let jsonObj = try! NSJSONSerialization.JSONObjectWithData(d, options: [])
+                let m = try! T.parseJSON(jsonObj as! [String : AnyObject])
+                completion(m, nil)
             } else {
                 completion(nil, error ?? NSError(domain: "jp.blogspot.safx-dev.IIJMio", code: 10400, userInfo: nil))
             }
         }
         task?.resume()
-    }
-
-    private static func convert<T where T: JSONDecodable, T == T.DecodedType>(data: NSData, _: T? = nil) throws -> T {
-        let jsonObj = try! NSJSONSerialization.JSONObjectWithData(data, options: [])
-        let json: [String : AnyObject] = jsonObj as! [String : AnyObject]
-
-        let ret = try! T.parseJSON(json)
-        return ret
-    }
-
-    private func createRequest(urlString: String) -> NSMutableURLRequest {
-        initializeSession()
-        return NSMutableURLRequest(URL: NSURL(string: urlString)!)
-    }
-
-    private func initializeSession() {
-        precondition(clientID != "" && redirectURI != "", "should be non-nil")
-        if session == nil {
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.timeoutIntervalForRequest = 30.0
-            let headers: [NSObject : AnyObject] = [
-                "X-IIJmio-Developer": clientID,
-                "X-IIJmio-Authorization": accessToken!
-            ]
-            configuration.HTTPAdditionalHeaders = headers
-            session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: nil)
-        }
     }
 }
 

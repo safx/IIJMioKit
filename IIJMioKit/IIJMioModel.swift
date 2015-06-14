@@ -98,7 +98,7 @@ public class MIOCouponResponse: JSONDecodable, JSONEncodable, CustomStringConver
     public class func parseJSON(data: AnyObject) throws -> MIOCouponResponse {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "returnCode")
             } else {
                 do {
@@ -113,25 +113,16 @@ public class MIOCouponResponse: JSONDecodable, JSONEncodable, CustomStringConver
         
         let couponInfo: [MIOCouponInfo]?
         if let v: AnyObject = data["couponInfo"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 couponInfo = nil
-            } else if let array = v as? [AnyObject] {
-                var r: [MIOCouponInfo] = []
-                r.reserveCapacity(array.count)
-                for e in array {
-                    if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "couponInfo")
-                    }
-        
-                    do {
-                        r.append(try MIOCouponInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "couponInfo", type: "MIOCouponInfo")
-                    }
-                }
-                couponInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "couponInfo", type: "Array")
+                do {
+                    couponInfo = try MIOCouponInfo.parseJSONArray(v)
+                } catch JSONDecodeError.NonNullablle {
+                    throw JSONDecodeError.NonNullablle(key: "couponInfo")
+                } catch JSONDecodeError.ValueTranslationFailed {
+                    throw JSONDecodeError.TypeMismatch(key: "couponInfo", type: "MIOCouponInfo")
+                }
             }
         } else {
             couponInfo = nil
@@ -164,7 +155,7 @@ public class MIOPacketResponse: JSONDecodable, JSONEncodable, CustomStringConver
     public class func parseJSON(data: AnyObject) throws -> MIOPacketResponse {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "returnCode")
             } else {
                 do {
@@ -179,25 +170,16 @@ public class MIOPacketResponse: JSONDecodable, JSONEncodable, CustomStringConver
         
         let packetLogInfo: [MIOPacketLogInfo]?
         if let v: AnyObject = data["packetLogInfo"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 packetLogInfo = nil
-            } else if let array = v as? [AnyObject] {
-                var r: [MIOPacketLogInfo] = []
-                r.reserveCapacity(array.count)
-                for e in array {
-                    if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "packetLogInfo")
-                    }
-        
-                    do {
-                        r.append(try MIOPacketLogInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "packetLogInfo", type: "MIOPacketLogInfo")
-                    }
-                }
-                packetLogInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "packetLogInfo", type: "Array")
+                do {
+                    packetLogInfo = try MIOPacketLogInfo.parseJSONArray(v)
+                } catch JSONDecodeError.NonNullablle {
+                    throw JSONDecodeError.NonNullablle(key: "packetLogInfo")
+                } catch JSONDecodeError.ValueTranslationFailed {
+                    throw JSONDecodeError.TypeMismatch(key: "packetLogInfo", type: "MIOPacketLogInfo")
+                }
             }
         } else {
             packetLogInfo = nil
@@ -228,7 +210,7 @@ public class MIOChangeCouponResponse: JSONDecodable, JSONEncodable, CustomString
     public class func parseJSON(data: AnyObject) throws -> MIOChangeCouponResponse {
         let returnCode: String
         if let v: AnyObject = data["returnCode"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "returnCode")
             } else {
                 do {
@@ -271,7 +253,7 @@ public class MIOCouponInfo: JSONDecodable, JSONEncodable, CustomStringConvertibl
     public class func parseJSON(data: AnyObject) throws -> MIOCouponInfo {
         let hddServiceCode: String
         if let v: AnyObject = data["hddServiceCode"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "hddServiceCode")
             } else {
                 do {
@@ -286,7 +268,7 @@ public class MIOCouponInfo: JSONDecodable, JSONEncodable, CustomStringConvertibl
         
         let plan: MIOPlan
         if let v: AnyObject = data["plan"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "plan")
             } else {
                 do {
@@ -301,25 +283,16 @@ public class MIOCouponInfo: JSONDecodable, JSONEncodable, CustomStringConvertibl
         
         let hdoInfo: [MIOCouponHdoInfo]
         if let v: AnyObject = data["hdoInfo"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "hdoInfo")
-            } else if let array = v as? [AnyObject] {
-                var r: [MIOCouponHdoInfo] = []
-                r.reserveCapacity(array.count)
-                for e in array {
-                    if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "hdoInfo")
-                    }
-        
-                    do {
-                        r.append(try MIOCouponHdoInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "MIOCouponHdoInfo")
-                    }
-                }
-                hdoInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "Array")
+                do {
+                    hdoInfo = try MIOCouponHdoInfo.parseJSONArray(v)
+                } catch JSONDecodeError.NonNullablle {
+                    throw JSONDecodeError.NonNullablle(key: "hdoInfo")
+                } catch JSONDecodeError.ValueTranslationFailed {
+                    throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "MIOCouponHdoInfo")
+                }
             }
         } else {
             throw JSONDecodeError.MissingKey(key: "hdoInfo")
@@ -327,25 +300,16 @@ public class MIOCouponInfo: JSONDecodable, JSONEncodable, CustomStringConvertibl
         
         let coupon: [MIOCoupon]
         if let v: AnyObject = data["coupon"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "coupon")
-            } else if let array = v as? [AnyObject] {
-                var r: [MIOCoupon] = []
-                r.reserveCapacity(array.count)
-                for e in array {
-                    if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "coupon")
-                    }
-        
-                    do {
-                        r.append(try MIOCoupon.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "coupon", type: "MIOCoupon")
-                    }
-                }
-                coupon = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "coupon", type: "Array")
+                do {
+                    coupon = try MIOCoupon.parseJSONArray(v)
+                } catch JSONDecodeError.NonNullablle {
+                    throw JSONDecodeError.NonNullablle(key: "coupon")
+                } catch JSONDecodeError.ValueTranslationFailed {
+                    throw JSONDecodeError.TypeMismatch(key: "coupon", type: "MIOCoupon")
+                }
             }
         } else {
             throw JSONDecodeError.MissingKey(key: "coupon")
@@ -394,7 +358,7 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
     public class func parseJSON(data: AnyObject) throws -> MIOCouponHdoInfo {
         let hdoServiceCode: String
         if let v: AnyObject = data["hdoServiceCode"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "hdoServiceCode")
             } else {
                 do {
@@ -409,7 +373,7 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let number: String
         if let v: AnyObject = data["number"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "number")
             } else {
                 do {
@@ -424,7 +388,7 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let iccid: String
         if let v: AnyObject = data["iccid"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "iccid")
             } else {
                 do {
@@ -439,7 +403,7 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let regulation: Bool
         if let v: AnyObject = data["regulation"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "regulation")
             } else {
                 do {
@@ -454,7 +418,7 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let sms: Bool
         if let v: AnyObject = data["sms"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "sms")
             } else {
                 do {
@@ -469,7 +433,7 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let voice: Bool
         if let v: AnyObject = data["voice"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "voice")
             } else {
                 do {
@@ -484,7 +448,7 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let couponUse: Bool
         if let v: AnyObject = data["couponUse"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "couponUse")
             } else {
                 do {
@@ -499,25 +463,16 @@ public class MIOCouponHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let coupon: [MIOCoupon]
         if let v: AnyObject = data["coupon"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "coupon")
-            } else if let array = v as? [AnyObject] {
-                var r: [MIOCoupon] = []
-                r.reserveCapacity(array.count)
-                for e in array {
-                    if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "coupon")
-                    }
-        
-                    do {
-                        r.append(try MIOCoupon.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "coupon", type: "MIOCoupon")
-                    }
-                }
-                coupon = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "coupon", type: "Array")
+                do {
+                    coupon = try MIOCoupon.parseJSONArray(v)
+                } catch JSONDecodeError.NonNullablle {
+                    throw JSONDecodeError.NonNullablle(key: "coupon")
+                } catch JSONDecodeError.ValueTranslationFailed {
+                    throw JSONDecodeError.TypeMismatch(key: "coupon", type: "MIOCoupon")
+                }
             }
         } else {
             throw JSONDecodeError.MissingKey(key: "coupon")
@@ -558,7 +513,7 @@ public class MIOCoupon: JSONDecodable, JSONEncodable, CustomStringConvertible {
     public class func parseJSON(data: AnyObject) throws -> MIOCoupon {
         let volume: UInt
         if let v: AnyObject = data["volume"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "volume")
             } else {
                 do {
@@ -573,7 +528,7 @@ public class MIOCoupon: JSONDecodable, JSONEncodable, CustomStringConvertible {
         
         let expire: String?
         if let v: AnyObject = data["expire"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 expire = nil
             } else {
                 do {
@@ -588,7 +543,7 @@ public class MIOCoupon: JSONDecodable, JSONEncodable, CustomStringConvertible {
         
         let type: String
         if let v: AnyObject = data["type"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "type")
             } else {
                 do {
@@ -631,7 +586,7 @@ public class MIOPacketLogInfo: JSONDecodable, JSONEncodable, CustomStringConvert
     public class func parseJSON(data: AnyObject) throws -> MIOPacketLogInfo {
         let hddServiceCode: String
         if let v: AnyObject = data["hddServiceCode"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "hddServiceCode")
             } else {
                 do {
@@ -646,7 +601,7 @@ public class MIOPacketLogInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let plan: MIOPlan
         if let v: AnyObject = data["plan"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "plan")
             } else {
                 do {
@@ -661,25 +616,16 @@ public class MIOPacketLogInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let hdoInfo: [MIOPacketHdoInfo]
         if let v: AnyObject = data["hdoInfo"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "hdoInfo")
-            } else if let array = v as? [AnyObject] {
-                var r: [MIOPacketHdoInfo] = []
-                r.reserveCapacity(array.count)
-                for e in array {
-                    if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "hdoInfo")
-                    }
-        
-                    do {
-                        r.append(try MIOPacketHdoInfo.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "MIOPacketHdoInfo")
-                    }
-                }
-                hdoInfo = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "Array")
+                do {
+                    hdoInfo = try MIOPacketHdoInfo.parseJSONArray(v)
+                } catch JSONDecodeError.NonNullablle {
+                    throw JSONDecodeError.NonNullablle(key: "hdoInfo")
+                } catch JSONDecodeError.ValueTranslationFailed {
+                    throw JSONDecodeError.TypeMismatch(key: "hdoInfo", type: "MIOPacketHdoInfo")
+                }
             }
         } else {
             throw JSONDecodeError.MissingKey(key: "hdoInfo")
@@ -713,7 +659,7 @@ public class MIOPacketHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
     public class func parseJSON(data: AnyObject) throws -> MIOPacketHdoInfo {
         let hdoServiceCode: String
         if let v: AnyObject = data["hdoServiceCode"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "hdoServiceCode")
             } else {
                 do {
@@ -728,25 +674,16 @@ public class MIOPacketHdoInfo: JSONDecodable, JSONEncodable, CustomStringConvert
         
         let packetLog: [MIOPacketLog]
         if let v: AnyObject = data["packetLog"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "packetLog")
-            } else if let array = v as? [AnyObject] {
-                var r: [MIOPacketLog] = []
-                r.reserveCapacity(array.count)
-                for e in array {
-                    if let _ = e as? NSNull {
-                        throw JSONDecodeError.NonNullablle(key: "packetLog")
-                    }
-        
-                    do {
-                        r.append(try MIOPacketLog.parseJSON(e))
-                    } catch JSONDecodeError.ValueTranslationFailed {
-                        throw JSONDecodeError.TypeMismatch(key: "packetLog", type: "MIOPacketLog")
-                    }
-                }
-                packetLog = r
             } else {
-                    throw JSONDecodeError.TypeMismatch(key: "packetLog", type: "Array")
+                do {
+                    packetLog = try MIOPacketLog.parseJSONArray(v)
+                } catch JSONDecodeError.NonNullablle {
+                    throw JSONDecodeError.NonNullablle(key: "packetLog")
+                } catch JSONDecodeError.ValueTranslationFailed {
+                    throw JSONDecodeError.TypeMismatch(key: "packetLog", type: "MIOPacketLog")
+                }
             }
         } else {
             throw JSONDecodeError.MissingKey(key: "packetLog")
@@ -781,7 +718,7 @@ public class MIOPacketLog: JSONDecodable, JSONEncodable, CustomStringConvertible
     public class func parseJSON(data: AnyObject) throws -> MIOPacketLog {
         let date: NSDate
         if let v: AnyObject = data["date"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "date")
             } else {
                 do {
@@ -796,7 +733,7 @@ public class MIOPacketLog: JSONDecodable, JSONEncodable, CustomStringConvertible
         
         let withCoupon: UInt
         if let v: AnyObject = data["withCoupon"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "withCoupon")
             } else {
                 do {
@@ -811,7 +748,7 @@ public class MIOPacketLog: JSONDecodable, JSONEncodable, CustomStringConvertible
         
         let withoutCoupon: UInt
         if let v: AnyObject = data["withoutCoupon"] {
-            if let _ = v as? NSNull {
+            if v is NSNull {
                 throw JSONDecodeError.NonNullablle(key: "withoutCoupon")
             } else {
                 do {

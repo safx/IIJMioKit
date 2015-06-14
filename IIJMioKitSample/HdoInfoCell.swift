@@ -49,7 +49,7 @@ class HdoInfoCell: UITableViewCell {
 
         if sender.on != savedCouponUse {
             MIORestClient.sharedClient.putCoupon(sender.on, hdoServiceCode: model!.hdoServiceCode) { [weak self] (response, error) -> Void in
-                if let e = error {
+                if let _ = error {
                     revert()
                     return
                 }
